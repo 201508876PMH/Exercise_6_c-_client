@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -27,20 +28,54 @@ namespace tcp
 		{
 			
             Socket ClientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            ClientSocket.Connect("10.211.55.3", 9000);
+            ClientSocket.Connect("192.168.0.10", 9000);
 		    Console.WriteLine("Connected...");
             NetworkStream ioClient = new NetworkStream(ClientSocket);
 
-		    string fileToRecieve = "fileToSend.txt";
+		    string fileToRecieve = "C:/Users/olive/Documents/Small.jpg";
 
+            LIB.writeTextTCP(ioClient,fileToRecieve);
+            /*
             byte[] msgBuff = Encoding.Default.GetBytes(fileToRecieve);
 		    ioClient.Write(msgBuff, 0, msgBuff.Length);
+            */
 
-            receiveFile(fileToRecieve, ioClient);
-		    
-            
-            
-		}
+		    long fileSize = LIB.getFileSizeTCP(ioClient);
+
+		    Console.WriteLine($"FileSize: {fileSize.ToString()}");
+
+            //List<byte> byteList = new List<byte>();
+
+		    byte[] readBuf = new byte[fileSize];
+
+		    //ioClient.Read(readBuf, 0, (int)fileSize);
+
+            /*
+		    String line = "";
+		    char ch;
+            */
+
+		    int i = 0;
+
+		    while (fileSize != 0)
+		    {
+		        readBuf[i] = (byte)ioClient.ReadByte();
+		        ++i;
+		        --fileSize;
+		    }
+
+		    File.WriteAllBytes("C:/Users/olive/Documents/downloadedImage.jpg", readBuf);
+
+		    Console.WriteLine("File downloaded.");
+
+
+            //Console.WriteLine($"FileText: {line}");
+
+            //receiveFile(fileToRecieve, ioClient);
+
+
+
+        }
 
 		/// <summary>
 		/// Receives the file.
@@ -54,13 +89,16 @@ namespace tcp
 		private void receiveFile (String fileName, NetworkStream io)
 		{
 		    
-            
+            /*
 		    byte[] buf = new byte[255];
 		    int rec = io.Read(buf, 0, buf.Length);
 
             Array.Resize(ref buf, rec);
+            */
+		    string str = LIB.readTextTCP(io);
 
-            Console.WriteLine($"Received:{Encoding.Default.GetString(buf)}");
+
+            Console.WriteLine($"Received: {str}");
 
 		}
 
