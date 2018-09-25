@@ -73,8 +73,51 @@ namespace tcp
 
 		        Console.WriteLine($"FileSize: {fileSize.ToString()}\nDownloading...");
 
-		        byte[] readBuf = new byte[fileSize];
+		        byte[] readBuf = new byte[1000];
 
+                FileStream fs = File.Create(saveFilePath);
+
+		        int offset = 0, count = 1000;
+
+		        int lastRead = 1;
+
+		        while (lastRead >= 0)
+		        {
+		            int i = 0;
+		            while (i < count)
+		            {
+		                readBuf[i] = (byte)io.ReadByte();
+		                ++i;
+		            }
+
+		            fs.Write(readBuf, offset, count);
+
+		            fileSize -= 1000;
+
+		            if (fileSize < 1000)
+		            {
+		                count = (int)fileSize;
+		                --lastRead;
+		                //fileSize -= 1000;
+		            }
+		            
+		            
+
+		            //offset += 1000;
+
+		            //if (offset < fileSize && (offset + 1000 > fileSize))
+		            //{
+		            //    count = (int)fileSize - offset;
+		            //}
+
+		        }
+
+                fs.Close();
+                
+
+                /*
+		        byte[] readBuf = new byte[fileSize];
+                
 		        int i = 0;
 		        while (fileSize != 0)
 		        {
@@ -84,6 +127,7 @@ namespace tcp
 		        }
 
 		        File.WriteAllBytes(saveFilePath, readBuf);
+                */
 
 		        Console.WriteLine("File downloaded.\n");
 		    }
