@@ -72,7 +72,7 @@ namespace tcp
 		/// </param>
 	    public static long getFileSizeTCP(NetworkStream inFromServer)
 	    {
-	    	return long.Parse(readTextTCP(inFromServer));
+            return long.Parse(readTextTCP(inFromServer));
 	    }
 
 		/// <summary>

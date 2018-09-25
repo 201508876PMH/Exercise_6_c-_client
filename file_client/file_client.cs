@@ -28,53 +28,24 @@ namespace tcp
 		{
 			
             Socket ClientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            ClientSocket.Connect("192.168.0.10", 9000);
+            ClientSocket.Connect("10.192.155.179", 9000);
 		    Console.WriteLine("Connected...");
             NetworkStream ioClient = new NetworkStream(ClientSocket);
 
-		    string fileToRecieve = "C:/Users/olive/Documents/Small.jpg";
-
-            LIB.writeTextTCP(ioClient,fileToRecieve);
-            /*
-            byte[] msgBuff = Encoding.Default.GetBytes(fileToRecieve);
-		    ioClient.Write(msgBuff, 0, msgBuff.Length);
-            */
-
-		    long fileSize = LIB.getFileSizeTCP(ioClient);
-
-		    Console.WriteLine($"FileSize: {fileSize.ToString()}");
-
-            //List<byte> byteList = new List<byte>();
-
-		    byte[] readBuf = new byte[fileSize];
-
-		    //ioClient.Read(readBuf, 0, (int)fileSize);
-
-            /*
-		    String line = "";
-		    char ch;
-            */
-
-		    int i = 0;
-
-		    while (fileSize != 0)
+		    while (true)
 		    {
-		        readBuf[i] = (byte)ioClient.ReadByte();
-		        ++i;
-		        --fileSize;
-		    }
+		        Console.WriteLine("Select the file you want to download from the server.");
+		        Console.Write("C:/");
 
-		    File.WriteAllBytes("C:/Users/olive/Documents/downloadedImage.jpg", readBuf);
+		        string fileToRecieve = "C:/" + Console.ReadLine();
 
-		    Console.WriteLine("File downloaded.");
+		        Console.WriteLine("Choose name, type and where to save the file.");
+		        Console.Write("C:/");
 
+		        string saveFilePath = "C:/" + Console.ReadLine();
 
-            //Console.WriteLine($"FileText: {line}");
-
-            //receiveFile(fileToRecieve, ioClient);
-
-
-
+		        receiveFile(fileToRecieve, ioClient, saveFilePath);
+            }
         }
 
 		/// <summary>
@@ -86,20 +57,36 @@ namespace tcp
 		/// <param name='io'>
 		/// Network stream for reading from the server
 		/// </param>
-		private void receiveFile (String fileName, NetworkStream io)
+		private void receiveFile (String filePath, NetworkStream io, string saveFilePath)
 		{
-		    
-            /*
-		    byte[] buf = new byte[255];
-		    int rec = io.Read(buf, 0, buf.Length);
+		    LIB.writeTextTCP(io, filePath);
 
-            Array.Resize(ref buf, rec);
-            */
-		    string str = LIB.readTextTCP(io);
+		    string error = LIB.readTextTCP(io);
 
+		    if (error == "Error: Could not find file.")
+		    {
+		        Console.WriteLine("Could not find file on server, please try again.\n");
+		    }
+		    else
+		    {
+		        long fileSize = long.Parse(error);
 
-            Console.WriteLine($"Received: {str}");
+		        Console.WriteLine($"FileSize: {fileSize.ToString()}\nDownloading...");
 
+		        byte[] readBuf = new byte[fileSize];
+
+		        int i = 0;
+		        while (fileSize != 0)
+		        {
+		            readBuf[i] = (byte) io.ReadByte();
+		            ++i;
+		            --fileSize;
+		        }
+
+		        File.WriteAllBytes(saveFilePath, readBuf);
+
+		        Console.WriteLine("File downloaded.\n");
+		    }
 		}
 
 		/// <summary>
