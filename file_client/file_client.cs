@@ -14,6 +14,7 @@ namespace tcp
 		private file_client (string[] args)
 		{
             Socket ClientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+<<<<<<< HEAD
 			ClientSocket.Connect(args[0], PORT);
 		    Console.WriteLine("Connected...");
             NetworkStream ioClient = new NetworkStream(ClientSocket);
@@ -23,6 +24,26 @@ namespace tcp
             string saveFilePath = Console.ReadLine();
             
 			receiveFile(args[1], ioClient, saveFilePath);
+=======
+            ClientSocket.Connect("10.192.86.58", 9000);
+		    Console.WriteLine("Connected...");
+            NetworkStream ioClient = new NetworkStream(ClientSocket);
+
+		    while (true)
+		    {
+		        Console.WriteLine("Select the file you want to download from the server.");
+		        Console.Write("C:/Users/olive/Desktop/");
+
+		        string fileToRecieve = "C:/Users/olive/Desktop/" + Console.ReadLine();
+
+		        Console.WriteLine("Choose name, type and where to save the file.");
+		        Console.Write("C:/Users/olive/Desktop/");
+
+		        string saveFilePath = "C:/Users/olive/Desktop/" + Console.ReadLine();
+
+		        receiveFile(fileToRecieve, ioClient, saveFilePath);
+            }
+>>>>>>> 8e8d8057d671316cf175e23ad6cc5a116db9d3ce
         }
 
 		private void receiveFile (String filePath, NetworkStream io, string saveFilePath)
@@ -39,7 +60,7 @@ namespace tcp
 		    {
 		        long fileSize = long.Parse(error);
 
-		        Console.WriteLine($"FileSize: {fileSize.ToString()}\nDownloading...");
+		        Console.WriteLine($"FileSize: {fileSize.ToString()} bytes\nDownloading...");
 
 		        byte[] readBuf = new byte[1000];
 
